@@ -17,8 +17,6 @@ const Todo = () => {
         handleDescReset
     } = usetTodoApi();
 
-    console.log(loading, 'alsdfj')
-
     return (
         <Box>
             <Typography variant='h3' textAlign='center' fontWeight='600' marginBottom='1px'>Todo App</Typography>
