@@ -92,8 +92,8 @@ const Todo = () => {
                     <Box
                         p={2}
                         mt={1}
-                    // uncomment this sx prop to view the cards in grid style type, By default it is in list type...
-                    // sx={{ display: 'flex', justifyContent: 'start', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
+                    // comment this sx prop to view the cards in list style type, By default it is in grid type...
+                    sx={{ display: 'flex', justifyContent: 'start', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
                     >
                         {todos?.map((items: any) => (
                             <TodoCards
