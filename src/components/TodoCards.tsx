@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, IconButton, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, IconButton, Tooltip, Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import moment from 'moment';
@@ -35,9 +35,11 @@ const TodoCards = ({ items, deleteTodo, updateTodo }: any) => {
                         >
                             {items.title || 'this is Title'}
                         </Typography>
+                        <Tooltip title="Delete">
                         <IconButton onClick={() => deleteTodo(items?.id)} size="small" color="error">
                             <DeleteIcon />
                         </IconButton>
+                        </Tooltip>
                     </Box>
 
                     <Typography
