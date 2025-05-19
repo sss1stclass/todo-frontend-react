@@ -1,25 +1,28 @@
 import usetTodoApi from '../hooks/usetTodoApi'
-import { Box, Button, Card, CardActionArea, CardContent, Divider, IconButton, InputAdornment, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Divider, IconButton, InputAdornment, Paper, TextField, Typography } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 // import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import TodoCards from './TodoCards';
 const Todo = () => {
     const {
         todos,
-        // loading,
-        // error,
+        loading,
         formdata,
         handleData,
         addNewTodo,
         updateTodo,
-        deleteTodo
+        deleteTodo,
+        handleTitleReset,
+        handleDescReset
     } = usetTodoApi();
+
+    console.log(loading, 'alsdfj')
+
     return (
         <Box>
-            <Typography variant='h2' textAlign='center' fontWeight='600' marginBottom='1px'>Todo App</Typography>
-            <Typography variant="overline" gutterBottom sx={{ display: 'block' }} textAlign='center' marginLeft='300px' marginTop='1px'>A simplified way to handle ans track your task</Typography>
+            <Typography variant='h3' textAlign='center' fontWeight='600' marginBottom='1px'>Todo App</Typography>
+            <Typography variant="overline" gutterBottom sx={{ display: { xs: 'none', sm: 'block' } }} textAlign='center' marginLeft='300px' marginTop='1px'>A simplified way to handle and track your task</Typography>
             <Divider />
             <Box mt={2}>
                 <Paper
@@ -29,10 +32,10 @@ const Todo = () => {
                         flexDirection: 'column',
                         gap: 10,
                         padding: 20,
-                        width: '50%',
                         margin: '0 auto',
                         alignItems: 'center',
                     }}
+                    sx={{ width: { xs: '80%', sm: '60%' } }}
                 >
                     <TextField
                         id="outlined-basic"
@@ -46,7 +49,7 @@ const Todo = () => {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton edge="end" onClick={() => alert('Icon clicked')}>
+                                    <IconButton edge="end" onClick={() => handleTitleReset()}>
                                         <ClearIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -66,7 +69,7 @@ const Todo = () => {
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton edge="end" onClick={() => alert('Icon clicked')}>
+                                    <IconButton edge="end" onClick={() => handleDescReset()}>
                                         <ClearIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -78,41 +81,32 @@ const Todo = () => {
                     </Button>
                 </Paper>
             </Box>
-            <Box p={2} mt={1}>
-                {todos?.map((items: any, index: number) => (
-                    <Card key={index} sx={{ minWidth: 275, position: 'relative', mt: 2 }}>
-                        <CardActionArea>
-                            <CardContent sx={{ height: '100%' }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography variant="h5" component="div">
-                                        {items.title || 'ajdfldfsjsdkf'}
-                                    </Typography>
-                                    <IconButton onClick={() => deleteTodo(items?.id)} size="small" color="error">
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Box>
-
-                                <Typography variant="body2" color="text.secondary" noWrap>
-                                    {items.description || 'This is the descriptions'}
-                                </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                        <Box sx={{ p: 2, pt: 0, mt: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Button
-                                size="small"
-                                variant="outlined"
-                                color="success"
-                                disabled={items?.completed == 1}
-                                endIcon={<DoneAllIcon />}
-                                onClick={() => updateTodo(items?.id)}
-                            >
-                                Completed
-                            </Button>
-                            <Typography variant="caption">{items?.created_at}</Typography>
-                        </Box>
-                    </Card>
-                ))}
-            </Box>
+            {
+                loading ? (
+                    <Box
+                        p={2}
+                        mt={1}
+                        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                        <CircularProgress color="inherit" />
+                        <Typography>Data is Loading...</Typography>
+                    </Box>)
+                    :
+                    <Box
+                        p={2}
+                        mt={1}
+                    // uncomment this sx prop to view the cards in grid style type, By default it is in list type...
+                    // sx={{ display: 'flex', justifyContent: 'start', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}
+                    >
+                        {todos?.map((items: any) => (
+                            <TodoCards
+                                key={items?.id}
+                                items={items}
+                                deleteTodo={deleteTodo}
+                                updateTodo={updateTodo}
+                            />
+                        ))}
+                    </Box>
+            }
         </Box>
     )
 }

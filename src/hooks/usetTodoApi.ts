@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const useTodoApi = () => {
     const [todos, setTodos] = useState<any[]>([]);
@@ -8,14 +10,15 @@ const useTodoApi = () => {
     const [formdata, setFormdata] = useState({
         title: '',
         description: ''
-    })
+    });
+
     const handleData = (event: any) => {
         const { name, value } = event.target;
         setFormdata({
             ...formdata,
             [name]: value
-        })
-    }
+        });
+    };
 
     const fetchTodos = async () => {
         try {
@@ -23,7 +26,9 @@ const useTodoApi = () => {
             const response = await axios.get('http://localhost:3000/todos');
             setTodos(response.data);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+            setError(errorMessage);
+            toast.error(`Failed to fetch todos: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -31,24 +36,37 @@ const useTodoApi = () => {
 
     const addNewTodo = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/todos', formdata);
+            if (!formdata.title.trim()) {
+                toast.warning("Title is required");
+                return;
+            }
+             if (!formdata.description.trim()) {
+                toast.warning("Description is required");
+                return;
+            }
+
+            await axios.post('http://localhost:3000/todos', formdata);
             await fetchTodos();
             setFormdata({
                 title: '',
                 description: ''
-            })
-
+            });
+            toast.success("Todo added successfully...");
         } catch (error) {
-            console.error('Error adding todo:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to add todo';
+            toast.error(errorMessage);
             throw error;
         }
     };
+
     const updateTodo = async (id: number) => {
         try {
-            const response = await axios.put(`http://localhost:3000/todos/${id}`, {completed:1});
-             await fetchTodos();
+            await axios.put(`http://localhost:3000/todos/${id}`, { completed: 1 });
+            await fetchTodos();
+            toast.success("Todo updated successfully...");
         } catch (error) {
-            console.error('Error updating todo:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to update todo';
+            toast.error(errorMessage);
             throw error;
         }
     };
@@ -57,8 +75,10 @@ const useTodoApi = () => {
         try {
             await axios.delete(`http://localhost:3000/todos/${id}`);
             await fetchTodos();
+            toast.success("Todo deleted successfully...");
         } catch (error) {
-            console.error('Error deleting todo:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to delete todo';
+            toast.error(errorMessage);
             throw error;
         }
     };
@@ -66,7 +86,19 @@ const useTodoApi = () => {
     useEffect(() => {
         fetchTodos();
     }, []);
-    console.log(formdata)
+
+    const handleTitleReset = ()=>{
+        setFormdata({
+            ...formdata, 
+            title:''
+        })
+    }
+        const handleDescReset = ()=>{
+        setFormdata({
+            ...formdata, 
+            description:''
+        })
+    }
 
     return {
         todos,
@@ -77,7 +109,10 @@ const useTodoApi = () => {
         handleData,
         addNewTodo,
         updateTodo,
-        deleteTodo
+        deleteTodo,
+        handleTitleReset,
+        handleDescReset
+        
     };
 };
 
